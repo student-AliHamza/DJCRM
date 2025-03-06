@@ -1,22 +1,26 @@
 from pathlib import Path
 import environ
-import os
 
+
+
+# Initialize Environment Variables
+env = environ.Env(
+    DEBUG=(bool,False)
+)
+READ_DOT_ENV_FILE = env.bool('READ_DOT_ENV_FILE', default=False)
+if READ_DOT_ENV_FILE:
+    environ.Env.read_env()
+
+# Debug Settings
+DEBUG = env("DEBUG")
+
+# Secret Key
+SECRET_KEY = env('SECRET_KEY', default='your-default-secret-key-here')
 # Set Base Directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Initialize Environment Variables
-env = environ.Env()
-environ.Env.read_env(os.path.join(BASE_DIR, ".env"))  # ✅ Always load .env
-
-# Debug Settings
-DEBUG = env.bool("DEBUG", default=True)
-
-# Secret Key
-SECRET_KEY = env("SECRET_KEY", default="django-insecure-default-key")
-
 # Allowed Hosts
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+ALLOWED_HOSTS = [] 
 
 # Application Definition
 INSTALLED_APPS = [
@@ -76,14 +80,27 @@ WSGI_APPLICATION = 'DJCRM.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env("DB_NAME", default="djcrm"),
-        'USER': env("DB_USER", default="djcrmuser"),
-        'PASSWORD': env("DB_PASSWORD", default="djcrm1234"),
-        'HOST': env("DB_HOST", default="localhost"),
-        'PORT': env("DB_PORT", default="5432"),
+        'NAME': env("DB_NAME"),
+        'USER': env("DB_USER"),
+        'PASSWORD': env("DB_PASSWORD"),
+        'HOST': env("DB_HOST" ),
+        'PORT': env("DB_PORT"),
     }
 }
-
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
 # Authentication
 AUTH_USER_MODEL = 'Leads.User'
 
@@ -125,3 +142,31 @@ ALLOWED_HOSTS = ["*"]
 # pip install gunicorn
 # pip freeze > requirements.txt
 # gunicorn DJCRM.wsgi:application
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = True
+EMAIL_PORT = env("EMAIL_PORT")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+
+
+
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'root': {
+#         'handlers': ['console'],
+#         'level': 'WARNING',
+#     },
+# }
+
+# TAILWIND_APP_NAME = 'theme'
