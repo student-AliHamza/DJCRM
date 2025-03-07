@@ -1,23 +1,28 @@
 from pathlib import Path
 import environ
-
+import os
 
 
 # Initialize Environment Variables
 env = environ.Env(
     DEBUG=(bool,False)
 )
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 READ_DOT_ENV_FILE = env.bool('READ_DOT_ENV_FILE', default=False)
 if READ_DOT_ENV_FILE:
     environ.Env.read_env()
+# Load environment variables from .env
+# env = environ.Env()
+# environ.Env.read_env(str(BASE_DIR / ".env"))  # Explicitly load .env file
 
 # Debug Settings
-DEBUG = env("DEBUG")
+DEBUG = env.bool("DEBUG")
 
 # Secret Key
 SECRET_KEY = env('SECRET_KEY', default='your-default-secret-key-here')
+
 # Set Base Directory
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Allowed Hosts
 ALLOWED_HOSTS = [] 
@@ -81,9 +86,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': env("DB_NAME"),
+
         'USER': env("DB_USER"),
         'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST" ),
+        'HOST': env("DB_HOST"),
         'PORT': env("DB_PORT"),
     }
 }
@@ -152,21 +158,21 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = env("EMAIL_PORT")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 
+ 
 
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+}
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#         },
-#     },
-#     'root': {
-#         'handlers': ['console'],
-#         'level': 'WARNING',
-#     },
-# }
-
-# TAILWIND_APP_NAME = 'theme'
+TAILWIND_APP_NAME = 'theme'
